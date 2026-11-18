@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MagicCube RPG</title>
+<style>
+
+:root{--bg:#f5f5f5;--panel:#fff;--panel2:#eee;--line:#d8d8d8;--text:#222;--muted:#666;--gold:#333;--gold2:#222;--red:#a33;--green:#287a43}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Arial,Helvetica,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{max-width:1180px;margin:0 auto;padding:18px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px}
+.sigil{display:none}
+.brand h1{font-size:21px;letter-spacing:0;margin:0;font-weight:700}
+.brand small{display:none}
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid #bbb;background:#f2f2f2;color:#222;padding:8px 11px;border-radius:4px}
+.btn:hover{background:#e5e5e5}
+.btn.primary{background:#333;border-color:#333;color:#fff;font-weight:600}
+.btn.danger{border-color:#c99;color:#922}
+h2{font-size:22px;margin:0 0 5px}
+h3{margin:0 0 9px;font-size:17px}
+.sub{color:var(--muted);margin:0 0 16px}
+.layout{display:grid;grid-template-columns:210px minmax(0,1fr) 190px;gap:12px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px;min-width:0}
+.sidebar .btn{width:100%;text-align:left;margin:4px 0}
+.charitem{display:block;width:100%;text-align:left;padding:9px;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--text);margin:3px 0}
+.charitem.active{background:#eee;border-color:#ccc}
+.charitem small{display:block;color:var(--muted)}
+.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;color:var(--muted)}
+.field input,.field select,.field textarea,textarea,input,select{width:100%;background:#fff;border:1px solid #ccc;color:#222;border-radius:3px;padding:8px;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus,textarea:focus{border-color:#555}
+.field textarea{min-height:75px;resize:vertical}
+.section{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#f7f7f7;border:1px solid var(--line);padding:10px;border-radius:3px}
+.stat b{display:block;color:#333;font-size:11px}
+.stat input{margin-top:6px}
+.listrow{display:flex;gap:7px;margin:6px 0}
+.listrow input{flex:1}
+.listrow button{flex:none}
+.muted{color:var(--muted)}
+.tag{display:inline-block;padding:2px 7px;border:1px solid #bbb;border-radius:3px;color:#333;font-size:11px;margin:2px}
+.systemgrid{display:grid;grid-template-columns:minmax(220px,1fr);gap:10px}
+.search{margin-bottom:10px}
+.classlist{max-height:650px;overflow:auto}
+.classbtn{display:block;width:100%;text-align:left;background:transparent;color:var(--text);border:1px solid transparent;border-radius:3px;padding:8px;margin:2px 0}
+.classbtn.active,.classbtn:hover{background:#eee;border-color:#ccc}
+.pathcard{background:#fafafa;border:1px solid var(--line);border-radius:3px;padding:12px;margin:8px 0}
+.pathcard h4{margin:0;color:#222;font-size:15px}
+.system-toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.system-toolbar select{max-width:360px}
+.system-details{background:#fff;border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin-top:9px}
+.system-details summary{cursor:pointer;color:#222;font-weight:700}
+.system-details[open] summary{margin-bottom:9px}
+.back-home{margin:0 0 12px}
+.sheet-roll-title{color:#222;font-weight:700;margin-bottom:2px}
+.pathcard p{margin:6px 0;color:#333}
+.pathcard .meta{font-size:12px;color:var(--muted)}
+.pathcard strong{color:#222}
+.notes{min-height:320px}
+.rollbox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result{font-size:25px;color:#222;font-weight:700}
+.notice{background:#f4f4f4;border:1px solid #ccc;border-radius:3px;padding:10px;color:#333}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.portrait{width:112px;height:112px;object-fit:cover;border-radius:3px;border:1px solid #ccc;background:#f5f5f5}
+.portrait-placeholder{width:112px;height:112px;border:1px dashed #bbb;border-radius:3px;display:grid;place-items:center;color:var(--muted);font-size:12px;text-align:center;padding:8px}
+.homegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.homecard{background:#fff;border:1px solid var(--line);border-radius:4px;padding:18px;min-height:155px;display:flex;flex-direction:column;justify-content:space-between}
+.homecard h3{font-size:18px;color:#222}
+.homecard p{color:var(--muted);max-width:48ch}
+.inline-roll{display:flex;flex-direction:column;align-items:stretch;gap:9px;background:#fafafa;border:1px solid var(--line);border-radius:3px;padding:11px;position:sticky;top:12px}
+.inline-roll .field{min-width:0}
+.inline-roll-result{min-width:0;color:var(--muted);overflow-wrap:anywhere}
+.mastergrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.mastercard{background:#fff;border:1px solid var(--line);border-radius:3px;padding:12px}
+.mastercard h4{margin:0 0 5px;color:#222}
+.foot{margin:20px 0 4px;text-align:center;color:#777;font-size:12px}
+@media(max-width:1050px){.layout{grid-template-columns:190px minmax(0,1fr)}.roll-sidebar{grid-column:2;position:static}.inline-roll{position:static;flex-direction:row;align-items:end;flex-wrap:wrap}.inline-roll .field{min-width:130px;flex:1}.inline-roll-result{flex:1;min-width:160px}}
+@media(max-width:800px){.layout,.systemgrid{grid-template-columns:1fr}.roll-sidebar{grid-column:auto}.formgrid{grid-template-columns:repeat(2,1fr)}.classlist{max-height:230px}.top{align-items:flex-start;flex-direction:column}}
+@media(max-width:480px){.shell{padding:12px}.formgrid,.stats,.rollbox,.homegrid{grid-template-columns:1fr}.actions{width:100%}.actions .btn{flex:1}}
+
+
+body.dark{--bg:#17191d;--panel:#22262c;--panel2:#2d323a;--line:#414852;--text:#edf0f3;--muted:#aeb6c0;--gold:#d6d6d6;--gold2:#fff}
+body.dark{background:#17191d;color:var(--text)}
+body.dark .top{border-color:var(--line)}
+body.dark .panel,body.dark .homecard,body.dark .mastercard{background:#22262c;border-color:var(--line);color:var(--text)}
+body.dark .btn{background:#30363e;border-color:#505862;color:#f0f2f5}
+body.dark .btn:hover{background:#3b424b}
+body.dark .btn.primary{background:#e5e7eb;border-color:#e5e7eb;color:#202329}
+body.dark .btn.danger{border-color:#875b5b;color:#ffb9b9}
+body.dark .field input,body.dark .field select,body.dark .field textarea,body.dark textarea,body.dark input,body.dark select{background:#171a1f;border-color:#454c56;color:#f0f2f5}
+body.dark .charitem{color:var(--text)}
+body.dark .charitem.active,body.dark .classbtn.active,body.dark .classbtn:hover{background:#343a43;border-color:#555e69}
+body.dark .stat,body.dark .pathcard,body.dark .system-details,body.dark .inline-roll{background:#1b1f24;border-color:#414852;color:var(--text)}
+body.dark .pathcard p{color:#d6dbe1}
+body.dark .notice{background:#30343a;border-color:#555d67;color:#e8edf2}
+body.dark .tag{border-color:#66717e;color:#f0f2f5}
+body.dark .portrait,body.dark .portrait-placeholder{background:#171a1f;border-color:#555d67}
+body.dark .foot{color:#929ba6}
+body.dark .result,body.dark .sheet-roll-title,body.dark .system-details summary,body.dark .pathcard h4,body.dark .pathcard strong,body.dark .homecard h3{color:#f0f2f5}
+body.dark .empty{color:var(--muted)}
+
+</style>
+</head>
+<body><div class="shell">
+<header class="top"><div class="brand"><div class="sigil">✧</div><div><h1>MagicCube RPG</h1><small>PORTAL DE PERSONAGENS</small></div></div><div class="actions"><button class="btn" id="exportBtn">Exportar backup</button><button class="btn" id="importBtn">Importar backup</button><button class="btn" id="themeToggle" type="button">🌙 Modo escuro</button><input type="file" id="importFile" accept=".json,application/json" hidden></div></header>
+<main id="app"></main><div class="foot">MagicCube RPG · Seus dados ficam salvos neste navegador. Faça backups regularmente.</div>
+</div>
+<script>
+const classes = [
+["Guerreiro","Especialista em combate físico, armas e técnicas de batalha.",["Cavaleiro","Duelista","Mestre de Armas"],"Ação","Golpe Poderoso","Realiza um ataque que causa dano adicional.","2 PM"],
+["Guardião","Protege aliados e suporta grandes quantidades de dano.",["Bastião","Protetor","Paladino"],"Resistir","Defesa Protetora","Reduz o dano recebido por um aliado.","2 PM"],
+["Ladino","Especialista em furtividade, agilidade, armadilhas e ataques surpresa.",["Assassino","Trapaceiro","Espião"],"Ação","Ataque Furtivo","Causa dano adicional ao atacar um inimigo desprevenido.","2 PM"],
+["Mago","Manipula energias arcanas através de feitiços e conhecimentos místicos.",["Elementalista","Necromante","Ilusionista"],"Averiguar","Projétil Arcano","Dispara uma esfera mágica contra um inimigo.","2 PM"],
+["Clérigo","Utiliza poderes sagrados para curar, proteger e combater forças malignas.",["Sacerdote","Exorcista","Inquisidor"],"Resistir","Toque Restaurador","Recupera uma pequena quantidade de vida de um aliado.","2 PM"],
+["Patrulheiro","Especialista em rastreamento, sobrevivência e combate à distância.",["Caçador","Domador","Rastreador"],"Averiguar","Marca da Caçada","Marca um inimigo, concedendo vantagem no próximo ataque contra ele.","1 PM"],
+["Bárbaro","Guerreiro brutal que transforma sua fúria em força e resistência.",["Berserker","Colosso","Predador"],"Ação","Fúria","Aumenta o dano causado até o final da próxima rodada.","2 PM"],
+["Druida","Manipula a natureza, os animais e as forças espirituais.",["Guardião Natural","Metamorfo","Xamã"],"Averiguar","Raízes Aprisionadoras","Prende um inimigo com raízes mágicas.","2 PM"],
+["Alquimista","Produz poções, explosivos e misturas extraordinárias.",["Bombardeiro","Médico","Transmutador"],"Averiguar","Frasco Explosivo","Arremessa uma mistura que causa dano em uma pequena área.","2 PM"],
+["Bardo","Utiliza música, palavras e histórias para influenciar pessoas e acontecimentos.",["Menestrel","Diplomata","Maestro"],"Averiguar","Inspiração","Concede +1 dado no próximo teste de um aliado.","2 PM"]
+];
+const paths = {
+"Cavaleiro":["Guerreiro","Postura de Aço","2 PM","Até o início do seu próximo turno, reduza o próximo dano que sofrer. Se estiver protegendo um aliado adjacente, pode receber o ataque no lugar dele.","Armadura Treinada","Enquanto usar armadura, recebe +1 dado em um teste para resistir a ser empurrado, derrubado ou deslocado.","Desafio do Cavaleiro","3 PM: escolha um inimigo que possa ver. Até o fim da rodada, ele sofre uma penalidade narrativa ao atacar qualquer alvo que não seja você."],
+"Duelista":["Guerreiro","Resposta Precisa","2 PM","Após um inimigo errar um ataque corpo a corpo contra você, faça imediatamente um ataque simples contra ele. Só pode usar uma vez por rodada.","Passos de Esgrima","Recebe +1 dado em Ação para evitar ser cercado ou escapar do alcance corpo a corpo.","Estocada Decisiva","3 PM: seu próximo ataque contra um único alvo ignora uma parte da proteção ou defesa dele."],
+"Mestre de Armas":["Guerreiro","Troca de Guarda","1 PM","Ao sacar ou trocar de arma, escolha entre ganhar +1 dado no próximo teste de Ação com ela ou +1 dado no próximo teste de Resistir contra um ataque.","Versatilidade Marcial","Pode utilizar armas improvisadas sem sofrer penalidades narrativas comuns.","Sequência Técnica","3 PM: após acertar um ataque, faça um segundo ataque simples contra o mesmo alvo ou outro ao alcance."],
+"Bastião":["Guardião","Muralha Inabalável","2 PM","Até o início do seu próximo turno, você não pode ser movido contra a vontade e reduz o próximo dano recebido.","Pés Firmes","Recebe +1 dado em Resistir contra empurrões, quedas e tentativas de deslocamento.","Fortaleza","4 PM: por uma rodada, aliados próximos recebem parte da redução de dano concedida pela sua Muralha Inabalável."],
+"Protetor":["Guardião","Interposição","2 PM","Quando um aliado próximo for atingido, mova-se até ele e torne-se o alvo do ataque, desde que consiga alcançá-lo.","Vigilância","Recebe +1 dado em Averiguar para perceber ameaças dirigidas a aliados próximos.","Cobertura Total","3 PM: escolha um aliado próximo; até o início do seu próximo turno, o primeiro ataque contra ele causa dano reduzido."],
+"Paladino":["Guardião","Juramento Luminoso","3 PM","Escolha um aliado. Ele recebe proteção contra o próximo efeito sobrenatural hostil que o atingir nesta cena.","Convicção","Recebe +1 dado em Resistir contra medo, tentação e efeitos que tentem controlar suas ações.","Golpe Consagrado","3 PM: seu próximo ataque causa dano sagrado adicional; contra criaturas profanas, também as impede de avançar até o próximo turno."],
+"Assassino":["Ladino","Ponto Vulnerável","2 PM","Se atacar um alvo distraído, surpreendido ou que ainda não agiu no combate, cause dano adicional.","Passo Silencioso","Recebe +1 dado em Ação para se mover furtivamente ou aproximar-se sem ser percebido.","Execução","4 PM: contra um alvo desprevenido, faça um ataque especial. Se acertar, causa dano elevado; não funciona como eliminação automática."],
+"Trapaceiro":["Ladino","Finta Ardilosa","2 PM","Escolha um inimigo próximo. Ele fica distraído e sofre -1 dado no próximo teste de Ação antes do fim do próximo turno.","Mãos Ligeiras","Recebe +1 dado em Ação para furtar, esconder ou manipular pequenos objetos sem ser notado.","Isca Ilusória","3 PM: crie uma distração convincente; inimigos que falharem em percebê-la desperdiçam sua reação ou mudam seu foco."],
+"Espião":["Ladino","Identidade Forjada","2 PM","Assuma rapidamente um disfarce simples ou adapte sua postura e voz. Quem não tiver motivo para desconfiar precisa investigar para perceber a farsa.","Olho Clínico","Recebe +1 dado em Averiguar para notar códigos, mentiras, hábitos e detalhes fora do lugar.","Rede de Contatos","3 PM: declare um contato plausível na região que possa fornecer uma informação, abrigo simples ou apresentação. O mestre define a disponibilidade."],
+"Elementalista":["Mago","Disparo Elemental","2 PM","Escolha fogo, água, terra ou vento e ataque um alvo à distância. O elemento pode gerar um efeito secundário coerente, como iluminar, empurrar levemente ou dificultar o movimento.","Afinidade Elemental","Escolha um elemento; recebe +1 dado em Averiguar para reconhecer, controlar ou interagir com fenômenos desse elemento.","Tempestade Elemental","4 PM: atinja uma pequena área com seu elemento. Cada alvo na área pode resistir ao efeito e sofre dano moderado se falhar."],
+"Necromante":["Mago","Mão Sepulcral","2 PM","Uma mão espectral alcança um alvo próximo, causando dano necrótico leve ou agarrando um objeto desprotegido.","Conhecimento dos Mortos","Recebe +1 dado em Averiguar para investigar cadáveres, espíritos e sinais de morte sobrenatural.","Servo Cadavérico","4 PM: anima um cadáver pequeno ou esqueleto por uma cena. Ele obedece a comandos simples e não possui habilidades especiais."],
+"Ilusionista":["Mago","Véu Enganador","2 PM","Crie uma ilusão visual ou sonora breve em alcance próximo. Uma criatura pode tentar perceber que é falsa.","Mente Escorregadia","Recebe +1 dado em Resistir contra ilusões e manipulação sensorial.","Labirinto de Imagens","4 PM: confunda um pequeno grupo de inimigos; quem falhar em resistir perde precisão e tem dificuldade para escolher alvos por uma rodada."],
+"Sacerdote":["Clérigo","Benção Restauradora","2 PM","Um aliado próximo recupera uma pequena quantidade de vida ou encerra um efeito físico leve, como sangramento superficial ou exaustão momentânea.","Mãos Compassivas","Recebe +1 dado em Averiguar para diagnosticar ferimentos, doenças e condições físicas.","Milagre Menor","4 PM: restaure uma quantidade moderada de vida de um aliado. Cada alvo só pode receber este efeito uma vez por cena."],
+"Exorcista":["Clérigo","Repúdio Espiritual","2 PM","Afaste uma entidade sobrenatural próxima ou cause dano espiritual leve a ela. Criaturas muito poderosas podem resistir.","Sentidos Consagrados","Recebe +1 dado em Averiguar para detectar possessões, maldições e presenças espirituais.","Ritual de Expulsão","4 PM: inicie um ritual que enfraquece ou expulsa uma entidade vulnerável da área se ela falhar em resistir. Requer concentração."],
+"Inquisidor":["Clérigo","Veredito","2 PM","Marque um inimigo que consiga ver. O próximo aliado a atacá-lo recebe +1 dado em Ação, então a marca termina.","Olhar Implacável","Recebe +1 dado em Averiguar para identificar contradições, intenções hostis e sinais de corrupção.","Sentença","4 PM: cause dano sagrado a um alvo marcado; se ele estiver sob uma condição negativa, também perde sua reação até o próximo turno."],
+"Caçador":["Patrulheiro","Alvo Marcado","1 PM","Marque uma criatura que consiga ver. Você recebe +1 dado no próximo teste de Ação contra ela nesta cena.","Rastros da Presa","Recebe +1 dado em Averiguar para seguir rastros e identificar hábitos de uma criatura.","Disparo Calculado","3 PM: faça um ataque à distância que ignora cobertura leve e causa dano adicional se o alvo estiver marcado."],
+"Domador":["Patrulheiro","Comando Companheiro","2 PM","Seu animal aliado realiza uma ação simples: mover-se, distrair, farejar ou atacar causando dano leve. O companheiro não pode agir novamente por este poder até seu próximo turno.","Laço de Confiança","Recebe +1 dado em Averiguar para compreender animais e acalmar criaturas não hostis.","Ataque Coordenado","3 PM: você e seu companheiro atacam o mesmo alvo; se ambos tiverem condições de alcançá-lo, um dos ataques recebe +1 dado."],
+"Rastreador":["Patrulheiro","Leitura do Terreno","1 PM","Examine uma área próxima e descubra sinais recentes de passagem, perigo ou esconderijos plausíveis.","Sobrevivente","Recebe +1 dado em Resistir contra clima severo, fome, sede e esforço de viagem.","Caminho Seguro","3 PM: escolha um pequeno grupo. Durante a próxima etapa da viagem, vocês recebem proteção contra um perigo ambiental comum ou evitam se perder."],
+"Berserker":["Bárbaro","Frenesi","2 PM","Até o fim do seu próximo turno, seus ataques corpo a corpo causam dano adicional, mas você não pode receber benefícios de ações defensivas nesse período.","Dor como Combustível","Quando sofrer dano, recebe +1 dado no próximo teste de Ação corpo a corpo antes do fim do turno seguinte. Uma vez por rodada.","Fúria Devastadora","4 PM: faça um ataque poderoso. Se acertar, causa dano elevado; se errar, fica vulnerável até seu próximo turno."],
+"Colosso":["Bárbaro","Corpo de Pedra","2 PM","Até o início do seu próximo turno, reduza o próximo dano recebido e não pode ser derrubado por efeitos comuns.","Força Titânica","Recebe +1 dado em Ação para erguer, quebrar, empurrar ou mover objetos pesados.","Abalo Sísmico","4 PM: golpeie o chão e desequilibre inimigos próximos; cada um pode resistir para evitar cair ou perder o equilíbrio."],
+"Predador":["Bárbaro","Bote Selvagem","2 PM","Avance até um alvo e faça um ataque corpo a corpo. Se partir de cobertura ou surpresa, recebe +1 dado em Ação.","Instinto de Caça","Recebe +1 dado em Averiguar para perceber criaturas escondidas ou identificar sinais de perigo iminente.","Perseguição Implacável","3 PM: até o fim da rodada, seu deslocamento aumenta e movimentos de um alvo marcado não encerram sua perseguição."],
+"Guardião Natural":["Druida","Casca Protetora","2 PM","Faça brotar casca e folhas ao redor de um aliado próximo, reduzindo o próximo dano que ele receber.","Comunhão Verde","Recebe +1 dado em Averiguar para reconhecer plantas, animais e alterações naturais incomuns.","Círculo de Espinhos","4 PM: cria uma área pequena de vegetação difícil; inimigos que a atravessarem podem sofrer dano leve ou ter o movimento reduzido."],
+"Metamorfo":["Druida","Forma Bestial","3 PM","Transforme-se parcialmente em um animal conhecido por uma cena, obtendo uma característica adequada, como garras, faro, natação ou escalada. Não ganha poderes extraordinários.","Adaptação Instintiva","Recebe +1 dado em Resistir contra perigos naturais e efeitos que afetem seu corpo.","Forma Completa","4 PM: assuma por uma cena a forma de um animal comum de porte semelhante. Não pode conjurar outras habilidades enquanto transformado."],
+"Xamã":["Druida","Voz dos Espíritos","2 PM","Convide um espírito local a responder uma pergunta simples sobre a região ou a manifestar um sinal breve. A resposta depende do conhecimento e da disposição do espírito.","Ouvido Ancestral","Recebe +1 dado em Averiguar para perceber espíritos, presságios e vestígios espirituais.","Guia Espiritual","4 PM: um espírito acompanha o grupo por uma cena, podendo alertar sobre um perigo próximo ou orientar em terreno conhecido."],
+"Bombardeiro":["Alquimista","Bomba de Estilhaços","2 PM","Arremesse um explosivo em um ponto próximo. Criaturas em uma pequena área sofrem dano leve e podem ser empurradas se falharem em resistir.","Mistura Instável","Recebe +1 dado em Averiguar para identificar substâncias, explosivos e reações químicas.","Carga Demolidora","4 PM: prepara uma bomba mais potente, capaz de causar dano elevado a estruturas ou dano moderado em pequena área. Requer preparação."],
+"Médico":["Alquimista","Dose Revigorante","2 PM","Um aliado próximo recupera um pouco de vida ou recebe +1 dado em Resistir contra o próximo efeito de fadiga ou veneno antes do fim da cena.","Diagnóstico Rápido","Recebe +1 dado em Averiguar para identificar ferimentos, doenças e toxinas.","Antídoto Universal","3 PM: neutraliza um veneno ou toxina comum em um alvo. Efeitos raros ou mágicos podem exigir teste ou ingredientes especiais."],
+"Transmutador":["Alquimista","Alterar Matéria","2 PM","Altere temporariamente uma propriedade simples de um objeto pequeno, como cor, rigidez, flexibilidade ou textura. Não cria matéria nem muda o valor do objeto.","Olhar Material","Recebe +1 dado em Averiguar para examinar a composição e as propriedades de objetos.","Transmutação Maior","4 PM: transforme temporariamente um objeto pequeno em outro material comum de volume semelhante. A mudança dura uma cena e não afeta seres vivos."],
+"Menestrel":["Bardo","Canção Inspiradora","2 PM","Escolha um aliado que possa ouvir você. Ele recebe +1 dado no próximo teste de Ação ou Resistir antes do fim do próximo turno.","Repertório Conhecido","Recebe +1 dado em Averiguar para recordar lendas, tradições, canções e costumes locais.","Hino de Coragem","4 PM: aliados próximos recebem +1 dado em Resistir contra medo e intimidação por uma rodada."],
+"Diplomata":["Bardo","Palavra Persuasiva","2 PM","Em uma conversa, receba +1 dado em um teste de influência para negociar, acalmar ou convencer alguém que esteja disposto a ouvir.","Leitor de Pessoas","Recebe +1 dado em Averiguar para perceber emoções, hesitações e mudanças de comportamento.","Acordo Favorável","3 PM: após uma negociação bem-sucedida, obtenha uma concessão pequena adicional, desde que seja plausível para a pessoa e a situação."],
+"Maestro":["Bardo","Ritmo de Batalha","2 PM","Escolha um aliado que possa ouvir você. Ele pode se reposicionar imediatamente uma curta distância sem provocar reações comuns.","Compasso Preciso","Recebe +1 dado em Averiguar para coordenar ações, perceber aberturas e antecipar o ritmo de um confronto.","Clímax Orquestrado","4 PM: escolha até dois aliados próximos; cada um recebe +1 dado no próximo teste de Ação realizado antes do fim da rodada."]
+};
+const specialties=[
+["Ilustrador de Armas","Especialista em desenhar armas, armaduras e equipamentos temporários."],
+["Ilustrador de Magias","Utiliza desenhos diretamente sobre corpos, objetos e superfícies para conceder propriedades sobrenaturais."],
+["Ilustrador de Bestas","Dá vida às criaturas que desenha, transformando ilustrações em aliados temporários."],
+["Ilustrador de Mapas","Desenha mapas capazes de revelar e até modificar caminhos."]
+];
+let data=JSON.parse(localStorage.getItem("cronicas_portal_v1")||'{"characters":[],"active":null}');
+let tab="inicio", selectedClass="Guerreiro";
+const save=()=>localStorage.setItem("cronicas_portal_v1",JSON.stringify(data));
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const active=()=>data.characters.find(c=>c.id===data.active);
+function newChar(){let c={id:crypto.randomUUID(),name:"Novo personagem",age:"",association:100,associationMax:100,specialty:"",pv:25,pvMax:25,pm:15,pmMax:15,level:1,klass:"Guerreiro",path:"",attributes:"",action:"",investigate:"",resist:"",inventory:[],abilities:[],notes:""};data.characters.push(c);data.active=c.id;save();render()}
+function render(){let root=document.getElementById("app");let content=tab==="inicio"?renderHome():tab==="fichas"?renderFichas():tab==="sistema"?renderSystem():tab==="anotacoes"?renderNotes():renderMaster();root.innerHTML=(tab==="inicio"?"":`<div class="back-home"><button class="btn" onclick="goTab('inicio')">← Início</button></div>`)+content;bind()}
+function renderHome(){return `<section class="panel"><h2>Bem-vindo ao MagicCube RPG</h2><p class="sub">Escolha por onde deseja começar sua aventura.</p><div class="homegrid"><article class="homecard"><div><h3>✦ Fichas de personagem</h3><p>Crie, edite e gerencie seus personagens, acompanhe atributos, recursos, inventário e habilidades.</p></div><button class="btn primary" onclick="goTab('fichas')">Acessar fichas →</button></article><article class="homecard"><div><h3>◈ Sistemas e regras</h3><p>Consulte classes, caminhos, especialidades, habilidades e as regras do sistema de jogo.</p></div><button class="btn primary" onclick="goTab('sistema')">Consultar sistema →</button></article></div></section>`}
+function goTab(next){tab=next;render()}
+function renderFichas(){let c=active();return `<h2>Minhas fichas</h2><p class="sub">Crie e gerencie seus personagens. As alterações são salvas neste navegador.</p><div class="layout"><aside class="panel sidebar"><button class="btn primary" onclick="newChar()">＋ Nova ficha</button>${data.characters.length?data.characters.map(x=>`<button class="charitem ${x.id===data.active?'active':''}" onclick="choose('${x.id}')">${esc(x.name||"Sem nome")}<small>${esc(x.klass)} ${x.path?'· '+esc(x.path):''}</small></button>`).join(""):'<p class="muted">Nenhuma ficha criada.</p>'}</aside><section class="panel">${!c?'<div class="empty">Crie sua primeira ficha para começar.</div>':`<div class="actions" style="justify-content:flex-end"><button class="btn" onclick="duplicateChar()">Duplicar</button><button class="btn" onclick="exportOne()">Exportar JSON</button><button class="btn" onclick="shareLink()">Criar link</button><button class="btn danger" onclick="deleteChar()">Excluir ficha</button></div><div class="section" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div id="portraitSlot">${c.portrait?`<img class="portrait" src="${c.portrait}" alt="Retrato do personagem">`:`<div class="portrait-placeholder">Sem retrato</div>`}</div><div style="flex:1;min-width:180px"><h3>Retrato do personagem</h3><p class="muted">A imagem fica salva localmente neste navegador.</p><input id="portraitInput" type="file" accept="image/*"><button class="btn" style="margin-top:7px" onclick="removePortrait()">Remover retrato</button></div></div><div class="formgrid">
+${field("Nome","name",c.name)}${field("Idade","age",c.age)}${field("Nível","level",c.level,"number")}
+${field("Associação atual","association",c.association,"number")}${field("Associação máxima","associationMax",c.associationMax,"number")}${field("Especialidade","specialty",c.specialty,"select",["",...specialties.map(s=>s[0])])}
+${field("PV atual","pv",c.pv,"number")}${field("PV máximo","pvMax",c.pvMax,"number")}${field("PM atual","pm",c.pm,"number")}
+${field("PM máximo","pmMax",c.pmMax,"number")}${field("Classe","klass",c.klass,"select",classes.map(x=>x[0]))}${field("Caminho","path",c.path,"select",["",...(classes.find(x=>x[0]===c.klass)?.[2]||[])])}
+</div><div class="section"><h3>Atributos e testes</h3><p class="muted">Registre os dados/valores conforme as regras da sua mesa.</p><div class="formgrid">${field("Atributos · base 4d6","attributes",c.attributes)}${field("Ação","action",c.action)}${field("Averiguar","investigate",c.investigate)}${field("Resistir","resist",c.resist)}</div></div><div class="section"><h3>Inventário</h3>${listEditor(c,"inventory","item","Adicionar item")}</div><div class="section"><h3>Habilidades</h3>${listEditor(c,"abilities","item","Adicionar habilidade")}</div><p class="muted" style="font-size:12px">Salvamento automático ativado.</p>`}</section><aside class="panel roll-sidebar"><div class="sheet-roll-title">⚄ Rolagem de dados</div><p class="muted" style="font-size:12px;margin:5px 0 12px">Role sem sair da ficha.</p><div class="inline-roll"><div class="field"><label>Quantidade</label><select id="sheetDiceCount">${[1,2,3,4,5,6,7,8].map(n=>`<option value="${n}" ${n===2?"selected":""}>${n}d6</option>`).join("")}</select></div><button class="btn primary" id="sheetRollBtn">Rolar dados</button><div id="sheetRollResult" class="inline-roll-result">O resultado aparecerá aqui.</div></div></aside></div>`}
+function field(label,key,value,type="text",opts=[]){let input=type==="select"?`<select data-key="${key}">${opts.map(o=>`<option ${o===value?'selected':''} value="${esc(o)}">${esc(o||"— selecionar —")}</option>`).join("")}</select>`:`<input data-key="${key}" type="${type}" value="${esc(value)}">`;return `<div class="field"><label>${label}</label>${input}</div>`}
+function listEditor(c,key,placeholder,addlabel){return `${(c[key]||[]).map((v,i)=>`<div class="listrow"><input data-list="${key}" data-index="${i}" value="${esc(v)}"><button class="btn danger" onclick="removeList('${key}',${i})">×</button></div>`).join("")}<div class="listrow"><input id="new-${key}" placeholder="${addlabel}"><button class="btn" onclick="addList('${key}')">Adicionar</button></div>`}
+function renderSystem(){let cl=classes.find(x=>x[0]===selectedClass)||classes[0];return `<details class="system-details"><summary>Montagem Base</summary><p>PV são PONTOS DE VIDA, sendo eles 10 em Nível 1, 15 em Nível 2 e 25 em Nível 3;</p><p>PM são PONTOS DE MANA, sendo eles 5 em Nível 1, 10 em Nível 2 e 20 em Nível 3;</p><p>Os Pontos de Atributos base são 4d6, tendo limite de 2d6 por atributo.</p><p>Por nível, recebe-se:</p><ul><li>+1d6 Pontos e Aumento de Limite pra 3 - No Nível 2;</li><li>+2d6 Pontos e Aumento de Limite pra 4 - No Nível 3;</li></ul></details><h2>Compêndio do sistema</h2><p class="sub">Escolha uma classe e abra apenas os conteúdos que deseja consultar.</p><section class="panel"><div class="system-toolbar"><label for="classPicker" class="muted">Classe</label><select id="classPicker">${classes.map(x=>`<option value="${esc(x[0])}" ${x[0]===cl[0]?"selected":""}>${esc(x[0])}</option>`).join("")}</select></div><h3>${esc(cl[0])}</h3><p class="muted">${esc(cl[1])}</p><div class="stats"><div class="stat"><b>BUFF DE ATRIBUTO</b>+1 dado em ${esc(cl[3])}</div><div class="stat"><b>HABILIDADE BÁSICA</b>${esc(cl[4])} · ${esc(cl[6])}</div><div class="stat"><b>CAMINHOS</b>${cl[2].length} opções</div></div><article class="pathcard"><h4>${esc(cl[4])}</h4><p>${esc(cl[5])}</p><span class="meta">Custo: ${esc(cl[6])}</span></article><details class="system-details"><summary>Caminhos de evolução (${cl[2].length})</summary>${cl[2].map(p=>{let d=paths[p];return `<details class="system-details"><summary>${esc(p)} · ${esc(d[2])}</summary><p><strong>${esc(d[1])}:</strong> ${esc(d[3])}</p><p><strong>Aprimoramento I — ${esc(d[4])}</strong><br>${esc(d[5])}</p><p><strong>Aprimoramento II — ${esc(d[6])}</strong><br>${esc(d[7])}</p></details>`}).join("")}</details></section><details class="system-details"><summary>Especialidades (${specialties.length})</summary><div class="formgrid">${specialties.map(s=>`<article class="pathcard"><h4>${esc(s[0])}</h4><p>${esc(s[1])}</p></article>`).join("")}</div><div class="notice">A especialidade pode reduzir pela metade o custo de Associação na criação de algo relacionado a ela, quando o mestre determinar.</div></details><details class="system-details"><summary>Regras de rolagem</summary><p><b>RA — Rolagem Alta:</b> é o maior resultado individual entre os dados.</p><p><b>2d6:</b> some os dois resultados. <b>4d6:</b> some os três maiores resultados.</p><p><b>Crítico:</b> em testes com 2d6 ou mais, dois resultados naturais 6 fazem o RA dobrar (6 → 12).</p></details>`}
+function renderNotes(){let c=active();return `<h2>Anotações pessoais</h2><p class="sub">Caderno privado do personagem selecionado. O mestre libera aprimoramentos; o jogador registra aqui.</p>${!c?'<div class="panel empty">Crie ou selecione uma ficha na aba Fichas.</div>':`<div class="panel"><h3>${esc(c.name||"Personagem")}</h3><p class="muted">Anote aprimoramentos liberados, habilidades adquiridas, história e descobertas da campanha.</p><textarea class="notes" id="notesArea" placeholder="Aprimoramentos liberados pelo mestre...">${esc(c.notes||"")}</textarea><p class="muted">Salvo automaticamente nesta ficha.</p></div>`}`}
+function renderMaster(){return `<h2>Painel do mestre</h2><p class="sub">Visão local das fichas salvas neste navegador. Não exige login.</p><div class="notice" style="margin-bottom:14px">Este painel só enxerga personagens armazenados neste mesmo navegador/dispositivo. Para receber fichas de jogadores, peça que enviem o JSON e importe-o aqui.</div><div class="actions" style="margin-bottom:14px"><button class="btn" onclick="document.getElementById('masterImport').click()">Importar ficha JSON</button><input id="masterImport" type="file" accept=".json,application/json" hidden></div><div class="mastergrid">${data.characters.length?data.characters.map(c=>`<article class="mastercard">${c.portrait?`<img class="portrait" src="${c.portrait}" alt="">`:""}<h4>${esc(c.name||"Sem nome")}</h4><p class="muted">${esc(c.klass)} ${c.path?"· "+esc(c.path):""}</p><p>NV ${esc(c.level)} · PV ${esc(c.pv)}/${esc(c.pvMax)} · PM ${esc(c.pm)}/${esc(c.pmMax)}</p><p class="muted">Associação ${esc(c.association)}/${esc(c.associationMax)}</p><button class="btn" onclick="choose('${c.id}');tab='fichas';render()">Abrir ficha</button> <button class="btn" onclick="downloadCharacter('${c.id}')">JSON</button></article>`).join(""):'<div class="empty">Nenhuma ficha salva neste navegador.</div>'}</div>`}
+function downloadCharacter(id){let c=data.characters.find(x=>x.id===id);if(!c)return;downloadJSON(c,`ficha-${(c.name||"personagem").toLowerCase().replace(/[^a-z0-9]+/g,"-")}.json`)}
+function downloadJSON(obj,name){let blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportOne(){let c=active();if(c)downloadCharacter(c.id)}
+function shareLink(){let c=active();if(!c)return;let payload=btoa(unescape(encodeURIComponent(JSON.stringify(c))));let url=location.href.split("#")[0]+"#ficha="+payload;if(url.length>18000){alert("Esta ficha está muito grande para compartilhar por link. Use Exportar JSON.");return}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(()=>alert("Link copiado! Quem abrir poderá importar esta ficha para o próprio navegador."),()=>prompt("Copie o link:",url))}else prompt("Copie o link:",url)}
+function removePortrait(){let c=active();if(c){c.portrait="";save();render()}}
+function importCharacterObject(obj){if(!obj||typeof obj!=="object"||!obj.name)throw Error("Ficha inválida");obj.id=crypto.randomUUID();obj.inventory=Array.isArray(obj.inventory)?obj.inventory:[];obj.abilities=Array.isArray(obj.abilities)?obj.abilities:[];data.characters.push(obj);data.active=obj.id;save();render()}
+function bind(){document.querySelectorAll("[data-key]").forEach(el=>el.addEventListener("change",()=>{let c=active();if(!c)return;c[el.dataset.key]=el.type==="number"?(Number(el.value)||0):el.value;if(el.dataset.key==="klass"){c.path="";save();render();return}if(el.dataset.key==="name"){save();render();return}save()}));document.querySelectorAll("[data-list]").forEach(el=>el.addEventListener("change",()=>{let c=active();c[el.dataset.list][Number(el.dataset.index)]=el.value;save()}));let n=document.getElementById("notesArea");if(n)n.addEventListener("input",()=>{let c=active();c.notes=n.value;save()});
+let pi=document.getElementById("portraitInput");if(pi)pi.onchange=()=>{let f=pi.files[0];if(!f)return;if(f.size>2*1024*1024){alert("Escolha uma imagem de até 2 MB.");return}let reader=new FileReader();reader.onload=()=>{let c=active();c.portrait=reader.result;save();render()};reader.readAsDataURL(f)};
+let mi=document.getElementById("masterImport");if(mi)mi.onchange=async()=>{try{let obj=JSON.parse(await mi.files[0].text());if(Array.isArray(obj.characters)){obj.characters.forEach(importCharacterObject);return}importCharacterObject(obj);alert("Ficha importada!")}catch(e){alert("Não foi possível importar esse JSON.")}};
+let picker=document.getElementById("classPicker");if(picker)picker.onchange=()=>{selectedClass=picker.value;render()};let rb=document.getElementById("sheetRollBtn");if(rb)rb.addEventListener("click",rollInSheet)}
+function choose(id){data.active=id;save();render()}function deleteChar(){if(confirm("Excluir esta ficha?")){data.characters=data.characters.filter(c=>c.id!==data.active);data.active=data.characters[0]?.id||null;save();render()}}function duplicateChar(){let c=active();if(!c)return;let copy=JSON.parse(JSON.stringify(c));copy.id=crypto.randomUUID();copy.name+=" (cópia)";data.characters.push(copy);data.active=copy.id;save();render()}
+function addList(key){let c=active(),v=document.getElementById("new-"+key).value.trim();if(v){c[key].push(v);save();render()}}function removeList(key,i){let c=active();c[key].splice(i,1);save();render()}
+function rollInSheet(){let select=document.getElementById("sheetDiceCount"),out=document.getElementById("sheetRollResult");if(!select||!out)return;let n=Number(select.value),vals=Array.from({length:n},()=>1+Math.floor(Math.random()*6)),sorted=[...vals].sort((a,b)=>b-a),sum=n>=4?sorted.slice(0,3).reduce((a,b)=>a+b,0):vals.reduce((a,b)=>a+b,0),ra=Math.max(...vals),crit=n>=2&&vals.filter(v=>v===6).length>=2;out.innerHTML=`<div>Dados: ${vals.map(v=>`<span class="tag">${v}</span>`).join(" ")}</div><div>Total: <b class="result">${sum}</b> · RA: <b class="result">${crit?ra*2:ra}</b></div>${n>=4?'<small>Somados os três maiores dados.</small>':''}${crit?'<div class="notice">CRÍTICO! RA duplicada.</div>':''}`}
+document.getElementById("exportBtn").onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="backup-cronicas-rpg.json";a.click();URL.revokeObjectURL(a.href)};
+document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange=async e=>{try{let obj=JSON.parse(await e.target.files[0].text());if(!Array.isArray(obj.characters))throw Error();data=obj;save();render();alert("Backup importado!")}catch{alert("Não foi possível importar esse arquivo.")}};
+function loadSharedLink(){if(!location.hash.startsWith("#ficha="))return;try{let raw=decodeURIComponent(escape(atob(location.hash.slice(7))));let obj=JSON.parse(raw);if(confirm("Foi recebida uma ficha compartilhada. Deseja importá-la para este navegador?"))importCharacterObject(obj);history.replaceState(null,"",location.pathname+location.search)}catch{alert("O link da ficha está inválido ou incompleto.")}}
+const themeToggle=document.getElementById("themeToggle");
+function applyTheme(isDark){document.body.classList.toggle("dark",isDark);themeToggle.textContent=isDark?"☀️ Modo claro":"🌙 Modo escuro";localStorage.setItem("magiccube_theme",isDark?"dark":"light")}
+applyTheme(localStorage.getItem("magiccube_theme")==="dark");
+themeToggle.addEventListener("click",()=>applyTheme(!document.body.classList.contains("dark")));
+render();loadSharedLink();
+</script></body></html>
